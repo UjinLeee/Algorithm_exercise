@@ -2,79 +2,74 @@ import java.io.*;
 import java.util.*;
 
 public class App {
-    static int N;
-    static int M;
+    static int n,m;
     static int[][] map;
+    static boolean[][] check;
     static int[] dx = {-1, 1, 0, 0};
     static int[] dy = {0, 0, -1, 1};
-    static int max;
-    // static boolean[][] chk;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st= new StringTokenizer(br.readLine());
 
-        //N,M 입력받기 
-        String[] str = br.readLine().split(" ");
-        N = Integer.parseInt(str[0]);
-        M = Integer.parseInt(str[1]);
-        map = new int[N][M];
-        for(int i = 0; i < N; i++){ //초기화하기
-            String[] arr = br.readLine().split("");
-            for(int j = 0; j < M; j++){
-                if(arr[j].equals("W")){
-                    //0: 바다 1: 육지기
-                    map[i][j] = 0;
-                }else{
-                    map[i][j] = 1;
-                }
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+
+        map = new int[n][m];
+        for(int i=0; i<n; i++) {
+            String[] line = br.readLine().split("");
+            for(int j=0; j<m; j++) {
+                // W: 87, L: 76
+                int num = line[j].charAt(0)-0;
+                if(num == 87)map[i][j] = -1;
+                else map[i][j] = 1;
             }
         }
 
-        max = -1;
-        for(int i = 0; i < N; i++){
-            for(int j = 0; j < M; j++){
-                if(map[i][j] == 1){//육지면
-                    boolean[][] visited = new boolean[N][M];
-                    int[][] chk_map = new int[N][M]; //최단 거리를 위한  
-                    chk_map[i][j] = 0;
-                    visited[i][j] = true;
-                    dfs(map, visited, chk_map, i, j);
+        int max = -1;
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<m; j++) {
+                if(map[i][j] ==1) {
+                    check = new boolean[n][m];
+                    int res =  bfs(j,i);
+                    if(res > max) {
+                        max =res;
+                    }
                 }
-               
             }
         }
         System.out.println(max);
-
     }
 
-    public static void dfs(int[][] map, boolean[][] visited, int[][] chk_map, int cur_x, int cur_y){
-        //cur_x: 현재 x
-        //cur_y: 현재 y
-        //상하좌우만 가능하다 
-        //for문 돌면서 탐색하기 
-       
-        for(int i = 0; i < 4; i++){
-            int next_x = cur_x + dx[i];
-            int next_y = cur_y + dy[i];
-            if(next_x < 0 || next_x >= N ||next_y < 0 || next_y >= M)
-                continue;
-            else if(map[next_x][next_y] == 0) //바다면 
-                continue; 
-            else if(visited[next_x][next_y] && chk_map[next_x][next_y] < chk_map[cur_x][cur_y] +1){ //true인데 
-                // if(chk_map[next_x][next_y] < chk_map[cur_x][cur_y] +1) //작으면 할 필요가 없다 
-                    continue;
+    static int bfs(int x, int y) {
+        Queue<int[]> q = new LinkedList<>();
+
+        int maxMove =-1;
+        check[y][x] =true;
+        q.add(new int[] {x,y,0});
+
+        while(!q.isEmpty()) {
+            int[] pos = q.poll();
+            int px = pos[0];
+            int py = pos[1];
+            int move = pos[2];
+
+            if(move > maxMove) {
+                maxMove = move;
             }
-            //다 해당 안되면 
-            else{
-                visited[next_x][next_y] = true;
-                chk_map[next_x][next_y] = chk_map[cur_x][cur_y] + 1; //바꾸기 
-                dfs(map, visited, chk_map, next_x, next_y);
-                
+
+            for(int i=0; i<4; i++) {
+                int nx = px + dx[i];
+                int ny = py + dy[i];
+                if(nx <0 || nx >m-1 || ny<0 || ny >n-1) continue;
+
+                if(!check[ny][nx] && map[ny][nx]==1) {
+                    check[ny][nx] =true;
+                    q.add(new int[]{nx,ny, move+1});
+                }
             }
         }
-        if(max < chk_map[cur_x][cur_y] ){
-            max = chk_map[cur_x][cur_y];
-            System.out.println("현재 max는 " + max);
-        }
-            
+
+        return maxMove;
+
     }
 }
