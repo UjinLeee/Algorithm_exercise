@@ -2,74 +2,59 @@ import java.io.*;
 import java.util.*;
 
 public class App {
-    static int n,m;
-    static int[][] map;
-    static boolean[][] check;
-    static int[] dx = {-1, 1, 0, 0};
-    static int[] dy = {0, 0, -1, 1};
-    public static void main(String[] args) throws IOException{
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st= new StringTokenizer(br.readLine());
-
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
-
-        map = new int[n][m];
-        for(int i=0; i<n; i++) {
-            String[] line = br.readLine().split("");
-            for(int j=0; j<m; j++) {
-                // W: 87, L: 76
-                int num = line[j].charAt(0)-0;
-                if(num == 87)map[i][j] = -1;
-                else map[i][j] = 1;
-            }
-        }
-
-        int max = -1;
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<m; j++) {
-                if(map[i][j] ==1) {
-                    check = new boolean[n][m];
-                    int res =  bfs(j,i);
-                    if(res > max) {
-                        max =res;
-                    }
-                }
-            }
-        }
-        System.out.println(max);
+    static int N;
+    static int[][] quest;
+    static int[][] dp;
+    static boolean visited[];
+    public static void main(String[] args) throws IOException { // 순열 돌리기
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      int N = Integer.parseInt(br.readLine());
+      quest = new int[100][3];
+      dp = new int[1001][1001];
+      visited = new boolean[100];
+      for(int i = 0; i < N; i++){
+        String[] str = br.readLine().split(" ");
+        int a = Integer.parseInt(str[0]);
+        int b = Integer.parseInt(str[1]);
+        int c = Integer.parseInt(str[2]);
+        quest[i][0] = a;
+        quest[i][1] = b;
+        quest[i][2] = c;
+      //  Arrays.fill(dp[i], -1);
+      }
+     // for(int a[]:dp)
+     //   Arrays.fill(a,-1);
+      System.out.println(cal(1,1));
+      
     }
 
-    static int bfs(int x, int y) {
-        Queue<int[]> q = new LinkedList<>();
-
-        int maxMove =-1;
-        check[y][x] =true;
-        q.add(new int[] {x,y,0});
-
-        while(!q.isEmpty()) {
-            int[] pos = q.poll();
-            int px = pos[0];
-            int py = pos[1];
-            int move = pos[2];
-
-            if(move > maxMove) {
-                maxMove = move;
-            }
-
-            for(int i=0; i<4; i++) {
-                int nx = px + dx[i];
-                int ny = py + dy[i];
-                if(nx <0 || nx >m-1 || ny<0 || ny >n-1) continue;
-
-                if(!check[ny][nx] && map[ny][nx]==1) {
-                    check[ny][nx] =true;
-                    q.add(new int[]{nx,ny, move+1});
-                }
-            }
+    static int cal(int a, int b){
+      //힘이 a, 지력이 b
+      if(dp[a][b] != 0) //이미 계산했던 값이면 
+        return dp[a][b];
+      
+        int point = 0;
+        dp[a][b] = 0;
+        ArrayList<Integer> check = new ArrayList<>();
+        for(int i = 0; i < N; i++){
+          if(quest[i][0] <= a || quest[i][1] <= b){
+            dp[a][b] += 1; //개수 더하기
+            if(visited[i]) continue; //이전에 방문했던 퀘스트면 pass
+            point += quest[i][2];
+            visited[i] = true;
+            check.add(i);
+          }
         }
 
-        return maxMove;
+        for(int i = 0; i <= point; i++){
+          dp[a][b] = Math.max(dp[a][b], cal(Math.min(100,a+i), Math.min(1000, b+(point-i))));
+        }
 
+        for(int i = 0; i < check.size(); i++){
+          visited[check.get(i)] = false; //다시 원상 복귀
+        }
+
+        return dp[a][b];
     }
+
 }

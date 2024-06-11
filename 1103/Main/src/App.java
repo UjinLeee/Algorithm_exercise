@@ -2,68 +2,57 @@ import java.io.*;
 import java.util.*;
 
 public class App {
-    static String[][] map;
-    static int[][] DP;
-    static boolean isCycle;
-    static int[] dx = {-1, 0, 1, 0};
-    static int[] dy = {0, -1, 0, 1};
-    static int max = -1;
-    static boolean[][] visited;
-    static int N, M;
-    public static void main(String[] args) throws Exception {
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int N;
+    static int[][] quest;
+    static int[][] dp;
+    static boolean visited[];
+    public static void main(String[] args) throws IOException { // 순열 돌리기
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      int N = Integer.parseInt(br.readLine());
+      quest = new int[100][3];
+      dp = new int[1001][1001];
+      visited = new boolean[100];
+      for(int i = 0; i < N; i++){
         String[] str = br.readLine().split(" ");
+        int a = Integer.parseInt(str[0]);
+        int b = Integer.parseInt(str[1]);
+        int c = Integer.parseInt(str[2]);
+        quest[i][0] = a;
+        quest[i][1] = b;
+        quest[i][2] = c;
+      }
+      System.out.println(cal(1,1));
+      
+    }
 
-        N = Integer.parseInt(str[0]);
-        M = Integer.parseInt(str[1]);
-        isCycle = false;
-        visited = new boolean[N][M];
-        map = new String[N][M];
-        DP = new int[N][M];
-
+    static int cal(int a, int b){
+      //힘이 a, 지력이 b
+      if(dp[a][b] != 0) //이미 계산했던 값이면 
+        return dp[a][b];
+      
+        int point = 0;
+        dp[a][b] = 0;
+        ArrayList<Integer> check = new ArrayList<>();
+        
         for(int i = 0; i < N; i++){
-            map[i] = br.readLine().split("");
+          if(quest[i][0] <= a || quest[i][1] <= b){ //가능하다면 
+            dp[a][b] += 1; //개수 더하기
+            if(visited[i]) continue; //이전에 방문했던 퀘스트면 pass
+            point += quest[i][2];
+            visited[i] = true;
+            check.add(i);
+          }
         }
 
-        DP[0][0] = 0;
-        visited[0][0] = true;
-        dfs(0, 0);
-        
-        if(isCycle == true){
-            System.out.println(-1);
-        }else{
-            System.out.println(max);
+        for(int i = 0; i <= point; i++){
+          dp[a][b] = Math.max(dp[a][b], cal(Math.min(100,a+i), Math.min(1000, b+(point-i))));
         }
 
+        for(int i = 0; i < check.size(); i++){
+          visited[check.get(i)] = false; //다시 원상 복귀
+        }
+
+        return dp[a][b];
     }
 
-    public static void dfs(int x, int y){
-
-        int len = Integer.parseInt(map[x][y]);
-        
-        for(int i = 0; i < 4; i++){
-
-            int nx = x + dx[i]*len;
-            int ny = y + dy[i]*len;
-           
-            if(nx < 0 || ny<0 || nx>=N || ny>= M || map[nx][ny].equals("H")){ //기저 ){ //기저사례1 
-                max = Math.max(max, DP[x][y]+1);
-                continue;
-            }
-            if(visited[nx][ny] == true){
-                //다시 돌아온 것이므로 
-                isCycle = true;
-                return;
-            }
-            if(DP[nx][ny] > DP[x][y] + 1) //이미 더 큰 값이 존재하는 경우 -> DP를 사용하는 이유이다. 
-                continue;
-            else{
-                visited[nx][ny] = true;
-                DP[nx][ny] = DP[x][y] + 1;
-                dfs(nx, ny);
-                visited[nx][ny] = false;
-            }
-        }
-    }
 }
