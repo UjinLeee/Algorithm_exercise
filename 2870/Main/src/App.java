@@ -1,11 +1,11 @@
 import java.io.*;
 import java.util.*;
+import java.math.BigInteger;
 
 public class App {
-    static ArrayList<Long> list = new ArrayList<>();
+    static ArrayList<BigInteger> list = new ArrayList<>();
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
         for(int i = 0; i < N; i++){
             char[] arr = br.readLine().toCharArray();
             dfs(arr, 0, "");
@@ -19,7 +19,7 @@ public class App {
     public static void dfs(char[] arr, int idx, String tmp){
         if(idx >= arr.length){
             if(!tmp.equals(""))
-                list.add(Long.valueOf(tmp));
+                list.add(new BigInteger(tmp));
             return;
         }
         if(Character.isLetter(arr[idx])){
@@ -27,7 +27,7 @@ public class App {
             if(tmp.equals("")){
                 dfs(arr, idx+1, "");
             }else{
-                list.add(Long.valueOf(tmp));
+                list.add(new BigInteger(tmp));
                 dfs(arr, idx+1, "");
             }
         }else{

@@ -25,25 +25,52 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] str = br.readLine().split(" ");
-        int N = Integer.parseInt(str[0]);
 
-        PriorityQueue<Number> pq = new PriorityQueue<>(1, new NumberComparator());
-        HashSet<Integer> map = new HashSet(); //num이 있는지를 확인하고자 하는 자료구조
+        int N = Integer.parseInt(str[0]);
         
+        
+        ArrayList<Number> list = new ArrayList();
+        HashSet<Integer> map = new HashSet(); //num이 있는지를 확인하고자 하는 자료구조
+         
         str = br.readLine().split(" ");
 
         for(int i = 0; i < N; i++){
+            boolean toggle = false;
             int tmp = Integer.parseInt(str[i]);
-            if(map.contains(tmp)){
-                
 
-            }else{ 
-                //tmp를 포함하지 않으면
-                map.add(tmp);
-                pq.add(new Number(tmp, 1, i)); //i는 index
+            if(i == 0){
+                list.add(new Number(tmp,1,i));
+                continue;
+            }
+            
+            for(int j = 0; j < list.size(); j++){
+                if(list.get(j).num == tmp){
+                    //있으면 
+                    list.get(j).cnt ++;
+                    toggle = true;
+                    break;
+                }
+            }
+            if(toggle == false){
+                list.add(new Number(tmp,1,i));
             }
         }
+
+        Collections.sort(list, new NumberComparator());
+
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < list.size(); i++){
+            int n = list.get(i).cnt;
+            int num = list.get(i).num;
+            for(int j = 0; j < n; j++){
+                sb.append(num);
+                sb.append(" ");
+            }
+        }
+
+        System.out.println(sb);
     }
 }
