@@ -1,43 +1,11 @@
-import java.io.*;
-import java.util.*;
-
 public class App {
-
-    static int X;
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        X = Integer.parseInt(br.readLine());
+        //좌표 입력받기  (좌표, 높이)
 
-        if(X==64){
-            System.out.println(1);
-            return;
-        }
+        //좌표를 기준으로 오름차순 배열하기
 
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
-        pq.add(64);
-        int sum = 64;
-        int ans = 0;
-        while(true){
-            int min = pq.poll(); //작은거
-            int a1 = min / 2; // 절반으로 자른거
-            if(sum - a1 > X){
-                pq.add(a1);
-                sum -= a1;
-                continue;
-            }
-            if(sum - a1 < X){
-                pq.add(a1);
-                pq.add(a1);
-                continue;
-            }
-            if(sum - a1 == X){
-                ans = pq.size()+1;
-                break;
-            }
-        }
+        //똑같은 수의 배열을 선언하기 -> 높이를 담는 배열 (1차원이어도 된다)
 
-        System.out.println(ans);
-        return;
-        
+        // 왼쪽과 오른쪽에서 이분탐색을 하면서, leftMax, rightMax를 갱신한다. 
     }
 }
